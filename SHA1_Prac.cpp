@@ -75,5 +75,20 @@ int main()
         cout<<_512MessageChunks[i]<<endl;
         pos += 512;
     }
+    string _32BitChunks[Adding448StringWith64string.size() / 512][80]; //array to store 32 bit chunk from 512 bit chunk
+    //storing first 16 words of 32 bit in array.
+    for (int row = 0; row < Adding448StringWith64string.size() / 512; row++)
+    {
+        pos = 0;
+        for(int column = 0; column < 16; column++)
+        {
+            for (int i = 0; i < Adding448StringWith64string.size() / 512; i++) //slitting 512 bit chunk into 32 bit chunks
+            {
+                _32BitChunks[row][column] = _512MessageChunks[i].substr(pos, 32);
+                pos += 32;
+                cout<<_32BitChunks[row][column].size()<<" "<<_32BitChunks[row][column]<<endl;
+            }
+        }
+    }
     return 0;
 }
