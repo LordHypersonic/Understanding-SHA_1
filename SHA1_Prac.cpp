@@ -59,6 +59,9 @@ string LeftRotate(string toRotate, int times = 1)
         toRotate.push_back(temp);
         times--;
     }
+    /*reverse(toRotate.begin(), toRotate.begin() + times);
+    reverse(toRotate.begin() + times, toRotate.end());
+    reverse(toRotate.begin(), toRotate.end());*/
     return toRotate;
 }
 
@@ -111,21 +114,10 @@ string NOT(string binaryString)
     return output;
 }
 
-// This function adds two binary strings and return
-// result as a third string
+//adding 2 binary strings
 string BinaryAddition(string a, string b)
 {
     string result = ""; // Initialize result
-    /*string Carry =  "0";
-    for (int i = 0; i < a.size(); i++)
-    {
-        string TempA, TempB, TempResult;
-        TempA = a[i]; TempB = b[i];
-        TempResult = XOR ( XOR(TempA,TempB), Carry);
-        Carry = OR( AND(XOR(TempA,TempB),Carry),AND(TempA,TempB));
-        //cout<<Carry<<endl;
-        result += TempResult;
-    }*/
     int s = 0;          // Initialize digit sum
 
     // Traverse both strings starting from last
@@ -133,7 +125,7 @@ string BinaryAddition(string a, string b)
     int i = a.size() - 1, j = b.size() - 1;
     while (i >= 0 || j >= 0 || s == 1)
     {
-        // Compute sum of last digits and carry
+        // Comput sum of last digits and carry
         s += ((i >= 0)? a[i] - '0': 0);
         s += ((j >= 0)? b[j] - '0': 0);
 
@@ -241,32 +233,40 @@ int main()
             string f = "", k = "";
             if (column < 20)
             {
-                f = OR( AND(b,c), AND(NOT(b),d));
+                string BandC = AND (b,c);
+                string NOTBandD = AND(NOT(b),d);
+                f = OR(BandC, NOTBandD);
                 k = "01011010100000100111100110011001";
             }
             else if(column < 40)
             {
-                f = XOR( XOR(b,c), d);
+                string BxorC = XOR(b,c);
+                f = XOR(BxorC,d);
                 k = "01101110110110011110101110100001";
             }
             else if (column < 60)
             {
-                f = OR ( OR ( AND(b,c), AND(b,d)), AND(c,d));
+                string BandC = AND(b,c);
+                string BandD = AND(b,d);
+                string CandD = AND(c,d);
+                string OR1 = OR(BandC,BandD);
+                f = OR(OR1, CandD);
                 k = "10001111000110111011110011011100";
             }
             else
             {
-                f = XOR( XOR(b,c),d);
+                string BxorC = XOR(b,c);
+                f = XOR(BxorC, d);
                 k = "11001010011000101100000111010110";
             }
-            string temp = BinaryAddition( BinaryAddition( BinaryAddition( BinaryAddition( LeftRotate(a,5),f),e),k),_32BitChunks[row][column]);
+            string word = _32BitChunks[row][column];
+            string temp = BinaryAddition( BinaryAddition( BinaryAddition( BinaryAddition( LeftRotate(a,5),f),e),k),word);
             temp.resize(32);
             e = d;
             d = c;
-            c = LeftRotate(b, 30);
+            c = LeftRotate(b,30);
             b = a;
             a = temp;
-            //cout<<a<<" "<<b<<" "<<c<<" "<<d<<" "<<e<<endl;
         }
         h0 = BinaryAddition(h0,a); h0.resize(32);
         h1 = BinaryAddition(h1,b); h1.resize(32);
