@@ -36,7 +36,7 @@ string IntegertoBinary(int number)
     return BinaryDigit;
 }
 
-//function to set up binary digits upto pad the binary message with zeros until its length is 512 % 448
+//function to set up binary digits until the binary message with zeros until its length is 4448%512
 string paddingBinarywithZero_448Length(string BinaryMessage)
 {
     BinaryMessage.push_back('1');
@@ -170,6 +170,34 @@ string Binary_to_Hex(string BinaryString)
     return output;
 }
 
+//function to convert Hex to binary
+string Hex_to_Binary(string HexString)
+{
+    string output = "";
+    map <char,string> BinaryValues;
+    BinaryValues.insert(pair<char,string>('0',"0000"));
+    BinaryValues.insert(pair<char,string>('1',"0001"));
+    BinaryValues.insert(pair<char,string>('2',"0010"));
+    BinaryValues.insert(pair<char,string>('3',"0011"));
+    BinaryValues.insert(pair<char,string>('4',"0100"));
+    BinaryValues.insert(pair<char,string>('5',"0101"));
+    BinaryValues.insert(pair<char,string>('6',"0110"));
+    BinaryValues.insert(pair<char,string>('7',"0111"));
+    BinaryValues.insert(pair<char,string>('8',"1000"));
+    BinaryValues.insert(pair<char,string>('9',"1001"));
+    BinaryValues.insert(pair<char,string>('A',"1010"));
+    BinaryValues.insert(pair<char,string>('B',"1011"));
+    BinaryValues.insert(pair<char,string>('C',"1100"));
+    BinaryValues.insert(pair<char,string>('D',"1101"));
+    BinaryValues.insert(pair<char,string>('E',"1110"));
+    BinaryValues.insert(pair<char,string>('F',"1111"));
+    for(int i = 0; i < HexString.size(); i++)
+    {
+        output += BinaryValues[HexString[i]];
+    }
+    return output;
+}
+
 int main()
 {
     string message = "A Test", binary_of_message = "";
@@ -190,20 +218,21 @@ int main()
     string Adding448StringWith64string = binaryAfterAdding448_0 + BinaryOfBinaryMessageLength;
     string _512MessageChunks[Adding448StringWith64string.size() / 512]; //array of chunk of 512 characters
     int pos = 0;
-    for (int i = 0; i < Adding448StringWith64string.size() / 512; i++)//breaking previous result into chunks of 512 bits
+    int numberOf512Chunks = Adding448StringWith64string.size() / 512;
+    for (int i = 0; i < numberOf512Chunks; i++)//breaking previous result into chunks of 512 bits
     {
 
         _512MessageChunks[i] = Adding448StringWith64string.substr(pos, 512);
         pos += 512;
     }
-    string _32BitChunks[Adding448StringWith64string.size() / 512][80]; //2D array to store 32 bit chunk from 512 bit chunk, rows store which 512 chunk to use and columns stores 32 bit words generated from that chunk
+    string _32BitChunks[numberOf512Chunks][80]; //2D array to store 32 bit chunk from 512 bit chunk, rows store which 512 chunk to use and columns stores 32 bit words generated from that chunk
     //storing first 16 words of 32 bit in array.
-    for (int row = 0; row < Adding448StringWith64string.size() / 512; row++)
+    for (int row = 0; row < numberOf512Chunks; row++)
     {
         pos = 0;
         for(int column = 0; column < 16; column++)
         {
-            for (int i = 0; i < Adding448StringWith64string.size() / 512; i++) //splitting 512 bit chunk into 32 bit chunks
+            for (int i = 0; i < numberOf512Chunks; i++) //splitting 512 bit chunk into 32 bit chunks
             {
                 _32BitChunks[row][column] = _512MessageChunks[i].substr(pos, 32);
                 pos += 32;
@@ -211,22 +240,25 @@ int main()
         }
     }
     //storing rest of the words of 32 bits in array
-    for (int row = 0; row < Adding448StringWith64string.size() / 512; row++)
+    for (int row = 0; row < numberOf512Chunks; row++)
     {
         for(int column = 16; column < 80; column++)
         {
             //Current Word = Left Rotate( XOR( XOR( XOR(Word (current index - 3), Word (current index - 8)), Word (current index - 14)), Word (Current index - 16)), 1)
-            _32BitChunks[row][column] = LeftRotate(XOR(XOR(XOR(_32BitChunks[row][column-3], _32BitChunks[row][column-8]), _32BitChunks[row][column-14]), _32BitChunks[row][column-16]));
+            string XOR1 = XOR(_32BitChunks[row][column-3],_32BitChunks[row][column-8]);
+            string XOR2 = XOR(XOR1,_32BitChunks[row][column-14]);
+            string XOR3 = XOR(XOR2,_32BitChunks[row][column-16]);
+            _32BitChunks[row][column] = LeftRotate(XOR3,1);
         }
     }
-    string h0 = "01100111010001010010001100000001",
-           h1 = "11101111110011011010101110001001",
-           h2 = "10011000101110101101110011111110",
-           h3 = "00010000001100100101010001110110",
-           h4 = "11000011110100101110000111110000";
+    string h0 = Hex_to_Binary("67452301"),
+           h1 = Hex_to_Binary("EFCDAB89"),
+           h2 = Hex_to_Binary("98BADCFE"),
+           h3 = Hex_to_Binary("10325476"),
+           h4 = Hex_to_Binary("C3D2E1F0");
     string a = h0, b = h1, c = h2, d = h3, e = h4;
     //for calculating final hash by manipulating the h0, h1, h2, h3 and h4 using 32 bit words calculated previously
-    for (int row = 0; row < Adding448StringWith64string.size() / 512; row++)
+    for (int row = 0; row < numberOf512Chunks; row++)
     {
         for(int column = 0; column < 80; column++)
         {
@@ -236,13 +268,13 @@ int main()
                 string BandC = AND (b,c);
                 string NOTBandD = AND(NOT(b),d);
                 f = OR(BandC, NOTBandD);
-                k = "01011010100000100111100110011001";
+                k = Hex_to_Binary("5A827999");
             }
             else if(column < 40)
             {
                 string BxorC = XOR(b,c);
                 f = XOR(BxorC,d);
-                k = "01101110110110011110101110100001";
+                k = Hex_to_Binary("6ED9EBA1");
             }
             else if (column < 60)
             {
@@ -251,30 +283,33 @@ int main()
                 string CandD = AND(c,d);
                 string OR1 = OR(BandC,BandD);
                 f = OR(OR1, CandD);
-                k = "10001111000110111011110011011100";
+                k = Hex_to_Binary("8F1BBCDC");
             }
             else
             {
                 string BxorC = XOR(b,c);
                 f = XOR(BxorC, d);
-                k = "11001010011000101100000111010110";
+                k = Hex_to_Binary("CA62C1D6");
             }
             string word = _32BitChunks[row][column];
-            string temp = BinaryAddition( BinaryAddition( BinaryAddition( BinaryAddition( LeftRotate(a,5),f),e),k),word);
-            temp.resize(32);
+            string Addition1 = BinaryAddition(LeftRotate(a,5),f);
+            string Addition2 = BinaryAddition(Addition1,e);
+            string Addition3 = BinaryAddition(Addition2,k);
+            string temp = BinaryAddition(Addition3,word);
+            temp.resize(32,'0');
             e = d;
             d = c;
             c = LeftRotate(b,30);
             b = a;
             a = temp;
         }
-        h0 = BinaryAddition(h0,a); h0.resize(32);
-        h1 = BinaryAddition(h1,b); h1.resize(32);
-        h2 = BinaryAddition(h2,c); h2.resize(32);
-        h3 = BinaryAddition(h3,d); h3.resize(32);
-        h4 = BinaryAddition(h4,e); h4.resize(32);
+        h0 = BinaryAddition(h0,a); h0.resize(32,'0');
+        h1 = BinaryAddition(h1,b); h1.resize(32,'0');
+        h2 = BinaryAddition(h2,c); h2.resize(32,'0');
+        h3 = BinaryAddition(h3,d); h3.resize(32,'0');
+        h4 = BinaryAddition(h4,e); h4.resize(32,'0');
     }
-    cout<<h0<<endl<<h1<<endl<<h2<<endl<<h3<<endl<<h4<<endl;
+    cout<<endl<<h0<<endl<<h1<<endl<<h2<<endl<<h3<<endl<<h4<<endl;
     string FinalHash = Binary_to_Hex(h0+h1+h2+h3+h4);
     cout<<FinalHash<<endl;
     return 0;
