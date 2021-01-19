@@ -1,3 +1,6 @@
+/*
+This is a practice program which is made to understand the working of SHA-1 algorithm
+*/
 #include <iostream>
 #include <string>
 #include <sstream>
