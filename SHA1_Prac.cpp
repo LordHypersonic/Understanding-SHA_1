@@ -6,7 +6,6 @@ This is a practice program which is made to understand the working of SHA-1 algo
 #include <sstream>
 #include <bitset>
 #include <algorithm>
-#include <map>
 
 using namespace std;
 
