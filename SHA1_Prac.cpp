@@ -66,7 +66,7 @@ string Integer_to_HexString(unsigned int number)
 
 int main()
 {
-    string message = "A Test", binary_of_message = "";
+    string message = "Hello World!", binary_of_message = "";
     string BinaryOfMessageCharacters[message.size()]; //binary of each character in message
     for (int i = 0; i < message.size(); i++)//splitting characters of message and converting into binary
     {
