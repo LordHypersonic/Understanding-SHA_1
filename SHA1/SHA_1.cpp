@@ -1,3 +1,11 @@
+/*
+Program: SHA-1 calculator
+Description: This part contain main function and use of SHA1() function.
+Author: Lord Hypersonic
+Email: lordhypersonic.522@gmail.com
+Website: www.lordhypersonic.blogspot.com
+Github: https://github.com/LordHypersonic
+*/
 #include "SHA_1.h"
 
 int main()

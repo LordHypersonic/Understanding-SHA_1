@@ -1,3 +1,11 @@
+/*
+Program: SHA-1 Calculator
+Description: This is a header file which contain class and function to convert a normal string to a SHA-1 hash string
+Author: Lord Hypersonic
+Email: lordhypersonic.522@gmail.com
+Website: www.lordhypersonic.blogspot.com
+Github: https://github.com/LordHypersonic
+*/
 #include <iostream>
 #include <string>
 #include <bitset>
