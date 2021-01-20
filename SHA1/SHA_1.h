@@ -1,8 +1,7 @@
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <bitset>
-#include <iomanip>
+#include <map>
 
 using namespace std;
 
@@ -37,16 +36,12 @@ public:
 
         //finding binary string of length of message
         MessageLength = Binary_of_Message.size();
-        string Binary_of_MessageLength = bitset<8>(MessageLength).to_string();
+        string Binary_of_MessageLength = bitset<64>(MessageLength).to_string();
 
         string Binary_after448_0 = Binary_of_Message + "1"; //appending 1 at the end of binary of message
         while(Binary_after448_0.size() % 512 != 448)//appending 448 % 512 0 at binary message
         {
             Binary_after448_0 += "0";
-        }
-        while (Binary_of_MessageLength.size() != 64) //making binary of message length to 64-bit by adding no. of 0s in front
-        {
-            Binary_of_MessageLength = "0" + Binary_of_MessageLength;
         }
         string FullBinaryMessage = Binary_after448_0 + Binary_of_MessageLength; //adding message length binary to message binary
         numberof512chunks = FullBinaryMessage.size() / 512;
@@ -67,7 +62,7 @@ public:
             {
                 for(int i = 0; i < numberof512chunks; i++)
                 {
-                    _80Words[row][column] = stoull(Chunksof_512bits[i].substr(pos, 32), 0, 2);
+                    _80Words[row][column] = bitset<32>(Chunksof_512bits[i].substr(pos, 32)).to_ullong();
                     pos += 32;
                 }
             }
@@ -109,7 +104,6 @@ public:
                 c = LeftRotate(b, 30);
                 b = a;
                 a = temp;
-                cout<<endl<<a<<" " <<b<<" "<<c<<" "<<d<<" "<<e<<endl;
             }
             h0 += a;
             h1 += b;
@@ -156,9 +150,37 @@ public:
     //function for converting integer to hex value
     string Integer_to_HexString(unsigned int number)
     {
-        stringstream HexString;
-        HexString << setfill('0') << setw(sizeof(8)) << hex << (number | 0);
-        return HexString.str();
+        map <string,string> hexValeus;
+        hexValeus.insert(pair<string,string>("0000","0"));
+        hexValeus.insert(pair<string,string>("0001","1"));
+        hexValeus.insert(pair<string,string>("0010","2"));
+        hexValeus.insert(pair<string,string>("0011","3"));
+        hexValeus.insert(pair<string,string>("0100","4"));
+        hexValeus.insert(pair<string,string>("0101","5"));
+        hexValeus.insert(pair<string,string>("0110","6"));
+        hexValeus.insert(pair<string,string>("0111","7"));
+        hexValeus.insert(pair<string,string>("1000","8"));
+        hexValeus.insert(pair<string,string>("1001","9"));
+        hexValeus.insert(pair<string,string>("1010","a"));
+        hexValeus.insert(pair<string,string>("1011","b"));
+        hexValeus.insert(pair<string,string>("1100","c"));
+        hexValeus.insert(pair<string,string>("1101","d"));
+        hexValeus.insert(pair<string,string>("1110","e"));
+        hexValeus.insert(pair<string,string>("1111","f"));
+        string Binary_of_number = Interger_to_BinaryString(number);
+        string output = "";
+        for (int i = 0; i < Binary_of_number.size(); i += 4)
+        {
+            output += hexValeus[Binary_of_number.substr(i,4)];
+        }
+        return output;
+    }
+
+    //function to convert integer to binary string
+    string Interger_to_BinaryString(unsigned int DecNum)
+    {
+        string output = bitset<32>(DecNum).to_string();
+        return output;
     }
 
     //function to call the start function and initialize the calculation and return the final hash

@@ -3,9 +3,9 @@ This is a practice program which is made to understand the working of SHA-1 algo
 */
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <bitset>
 #include <algorithm>
+#include <map>
 
 using namespace std;
 
@@ -56,17 +56,38 @@ unsigned int LeftRotate(unsigned int toRotate,unsigned int times = 1)
     return ((toRotate << times) | (toRotate >> (32-times)));
 }
 
-//function to convert Hex to binary
+//function to convert integer to HexString
 string Integer_to_HexString(unsigned int number)
 {
-    stringstream output;
-    output << hex << (number | 0);
-    return output.str();
+    map <string,string> hexValeus;
+    hexValeus.insert(pair<string,string>("0000","0"));
+    hexValeus.insert(pair<string,string>("0001","1"));
+    hexValeus.insert(pair<string,string>("0010","2"));
+    hexValeus.insert(pair<string,string>("0011","3"));
+    hexValeus.insert(pair<string,string>("0100","4"));
+    hexValeus.insert(pair<string,string>("0101","5"));
+    hexValeus.insert(pair<string,string>("0110","6"));
+    hexValeus.insert(pair<string,string>("0111","7"));
+    hexValeus.insert(pair<string,string>("1000","8"));
+    hexValeus.insert(pair<string,string>("1001","9"));
+    hexValeus.insert(pair<string,string>("1010","a"));
+    hexValeus.insert(pair<string,string>("1011","b"));
+    hexValeus.insert(pair<string,string>("1100","c"));
+    hexValeus.insert(pair<string,string>("1101","d"));
+    hexValeus.insert(pair<string,string>("1110","e"));
+    hexValeus.insert(pair<string,string>("1111","f"));
+    string Binary_of_number = bitset<32>(number).to_string();
+    string output = "";
+    for (int i = 0; i < Binary_of_number.size(); i += 4)
+    {
+        output += hexValeus[Binary_of_number.substr(i,4)];
+    }
+    return output;
 }
 
 int main()
 {
-    string message = "Hello World!", binary_of_message = "";
+    string message = "A Test", binary_of_message = "";
     string BinaryOfMessageCharacters[message.size()]; //binary of each character in message
     for (int i = 0; i < message.size(); i++)//splitting characters of message and converting into binary
     {
